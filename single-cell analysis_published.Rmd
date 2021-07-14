@@ -25,7 +25,6 @@ library(sctransform)
 #library(limma)
 library(gplots)
 library(EnhancedVolcano)
-#library(msigdbr)
 getwd()
 ```
 
