@@ -107,13 +107,13 @@ mitotransfer_scRNA_batch[["percent.mt"]] <- PercentageFeatureSet(mitotransfer_sc
 
 #Quality control plot
 VlnPlot(mitotransfer_scRNA_batch, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size = .005)
-ggsave("single cell RNA SEQ May 2019/figures/vlnQC-prefilter.png")
+ggsave("figures/vlnQC-prefilter.png")
 
 #Filtering out low quality cells based on values above and replotting quality control.
 mitotransfer.combined <- subset(mitotransfer_scRNA_batch, subset = nFeature_RNA > 2485 & nFeature_RNA < 8801)
 
 VlnPlot(mitotransfer.combined, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size = .005)
-ggsave("single cell RNA SEQ May 2019/figures/vlnQC-postfilter.png")
+ggsave("figures/vlnQC-postfilter.png")
 
 #running the SCTransform package from Seurat
 mitotransfer.combined <- SCTransform(object = mitotransfer.combined, verbose = FALSE)
@@ -140,7 +140,7 @@ Now that I have run all the analysis, I want to look at how these visually clust
 p1 <- DimPlot(mitotransfer.combined, reduction = "pca", group.by = "condition")
 p2 <- DimPlot(mitotransfer.combined, reduction = "pca", label = TRUE)
 plot_grid(p1, p2)
-ggsave("single cell RNA SEQ May 2019/figures/pca_original_cluster.png")
+ggsave("figures/pca_original_cluster.png")
 ```
 
 Given that I don't appear to have batch effects and we see only 2 primary clusters (MDA-MB-231 cells and Macrophages), I will look at umap and tSNE.
@@ -151,21 +151,21 @@ Given that I don't appear to have batch effects and we see only 2 primary cluste
 p1 <- DimPlot(mitotransfer.combined, reduction = "umap", group.by = "condition")
 p2 <- DimPlot(mitotransfer.combined, reduction = "umap", label = TRUE)
 plot_grid(p1, p2)
-ggsave("single cell RNA SEQ May 2019/figures/umap_original_cluster.png")
+ggsave("figures/umap_original_cluster.png")
 
 #Plots by condition or clustering (tSNE)
 
 p1 <- DimPlot(mitotransfer.combined, reduction = "tsne", group.by = "condition")
 p2 <- DimPlot(mitotransfer.combined, reduction = "tsne", label = TRUE)
 plot_grid(p1, p2)
-ggsave("single cell RNA SEQ May 2019/figures/tsne_original_cluster.png")
+ggsave("figures/tsne_original_cluster.png")
 
 
 #Plots if splitting up condition (either tSNE or uMAP)
 DimPlot(mitotransfer.combined, reduction = "umap", split.by = "condition")
-ggsave("single cell RNA SEQ May 2019/figures/umap_clusters_split_by_sample.png")
+ggsave("figures/umap_clusters_split_by_sample.png")
 DimPlot(mitotransfer.combined, reduction = "tsne", split.by = "condition")
-ggsave("single cell RNA SEQ May 2019/figures/umap_labels_split_by_sample.png")
+ggsave("figures/umap_labels_split_by_sample.png")
 ```
 
 Post-filtering, let's see how many cells we have remaining from each cluster.
@@ -178,13 +178,13 @@ table(mitotransfer.combined$orig.ident)
 At this point, I am saving the dataset in an R object so I don't have to repeat all the above steps.
 
 ```{r}
-saveRDS(mitotransfer.combined, file = "single cell RNA SEQ May 2019/data/R_analysis/mitotransfer_combined_cocultureonly.rds")
+saveRDS(mitotransfer.combined, file = "data/R_analysis/mitotransfer_combined_cocultureonly.rds")
 ```
 
 From here, I'll re-load in the RDS object and continue my analysis.
 
 ```{r}
-mitotransfer.combined <- readRDS("single cell RNA SEQ May 2019/data/R_analysis/mitotransfer_combined_cocultureonly.rds")
+mitotransfer.combined <- readRDS("data/R_analysis/mitotransfer_combined_cocultureonly.rds")
 ```
 
 Now that we have seen how the umap plot looks, we want to begin preliminary analysis of what type of cell each cluster represents. Given that we added only Macrophages and MDA-MB-231, I will look for markers of these.
@@ -196,7 +196,7 @@ Using https://doi.org/10.1016/j.ccell.2019.02.009 as a source, Table S3 - we can
 #Idents(mitotransfer.combined) <- "condition"
 TAM_GENE_MARKERS <- c("APOE","ATG7","BCAT1","CCL7","CD163","CD68","CD84","CHI3L1","CHIT1","CLEC5A","COL8A2","COLEC12","CTSK","CXCL5","CYBB","DNASE2B","EMP1","FDX1","FN1","GM2A","GPC4","ANOS1","MARCO","ME1","MS4A4A","MSR1","PCOLCE2","PTGDS","RAI14","SCARB2","SCG5","SGMS1","SULT1C2","ITGAM")
 DoHeatmap(mitotransfer.combined, features = TAM_GENE_MARKERS, size = 2)
-ggsave("single cell RNA SEQ May 2019/figures/heatmap_TAM_only_gene_signature.png")
+ggsave("figures/heatmap_TAM_only_gene_signature.png")
 
 
 ```
@@ -228,7 +228,6 @@ mitotransfer.combined$clusterID <- Idents(mitotransfer.combined)
 Idents(mitotransfer.combined) <- "clusterID"
 mitotransfer.combined <- RenameIdents(mitotransfer.combined, `0` = "Mac", `1` = "Mac", `2` = "231", `3` = "231", `4` = "231", `5` = "231", `6` = "231", `7` = "231", `8` = "231", `9` = "Mac")
 DimPlot(mitotransfer.combined, label = TRUE)
-#ggsave(filename = "single cell RNA SEQ May 2019/figures/umap_unlabelled_plot_legend.png")
 ```
 
 Based on the graph above, it looks pretty convincing that my clusters are labelled correctly.
@@ -237,7 +236,7 @@ So lets look at these two groups, by condition: (Reminder: 1 = 231's receive Mac
 
 ```{r}
 DimPlot(mitotransfer.combined, group.by = "condition")
-#ggsave(filename = "single cell RNA SEQ May 2019/figures/umap_labelled_plot_legend_by_condition.png")
+
 ```
 
 Maybe something about the number of cells in each group will tell us something:
@@ -303,34 +302,34 @@ Let's visualize the MDA specific and MAC specific cell subsets by umap and tSNE
 p1 <- DimPlot(mda_cells, reduction = "umap", group.by = "condition")
 p2 <- DimPlot(mda_cells, reduction = "umap", label = TRUE)
 plot_grid(p1, p2)
-#ggsave("single cell RNA SEQ May 2019/figures/mda_only_umap.png")
+
 
 p1 <- DimPlot(mda_cells, reduction = "tsne", group.by = "condition")
 p2 <- DimPlot(mda_cells, reduction = "tsne", label = TRUE)
 plot_grid(p1, p2)
-#ggsave("single cell RNA SEQ May 2019/figures/mda_only_tsne.png")
+
 
 DimPlot(mda_cells, reduction = "umap", split.by = "condition")
-#ggsave("single cell RNA SEQ May 2019/figures/mda_only_umap_condition_split.png")
+
 DimPlot(mda_cells, reduction = "tsne", split.by = "condition")
-#ggsave("single cell RNA SEQ May 2019/figures/mda_only_tsne_condition_split.png")
+
 ```
 
 ```{r}
 p1 <- DimPlot(mac_cells, reduction = "umap", group.by = "condition")
 p2 <- DimPlot(mac_cells, reduction = "umap", label = TRUE)
 plot_grid(p1, p2)
-#ggsave("single cell RNA SEQ May 2019/figures/mac_only_umap.png")
+
 
 p1 <- DimPlot(mac_cells, reduction = "tsne", group.by = "condition")
 p2 <- DimPlot(mac_cells, reduction = "tsne", label = TRUE)
 plot_grid(p1, p2)
-#ggsave("single cell RNA SEQ May 2019/figures/mac_only_tsne.png")
+
 
 DimPlot(mac_cells, reduction = "umap", split.by = "condition")
-#ggsave("single cell RNA SEQ May 2019/figures/mac_only_umap_condition_split.png")
+
 DimPlot(mac_cells, reduction = "tsne", split.by = "condition")
-#ggsave("single cell RNA SEQ May 2019/figures/mda_only_tsne_condition_split.png")
+
 ```
 
 I will then perform differential expression analysis on the MDA-MB-231 cells by comparing MDA-MB-231 cells that are in conditions 1 (Received mitochondrial transfer) and condition 2 (Did not receive mitochondrial transfer)
@@ -340,10 +339,12 @@ Idents(mitotransfer.combined) <- "condition"
 
 mda_only_condition_1v2.markers <- FindMarkers(mda_cells, ident.1 = "1", ident.2 = "2", logfc.threshold = ".01")
 
-fwrite(x = mda_only_condition_1v2.markers, row.names = TRUE, file = "single cell RNA SEQ May 2019/data/R_analysis/mda_only_conditions_transfer1vsnotransfer2_nocc_15npcs.csv")
+fwrite(x = mda_only_condition_1v2.markers, row.names = TRUE, file = "data/R_analysis/mda_only_conditions_transfer1vsnotransfer2_nocc_15npcs.csv")
 ```
 
-#Visualize the differentially expressed genes with a volcano plot
+I will then use this differential expression dataset saved above and process it using the Ingenuity pathway analysis software by Qiagen.
+
+#To bisualize the differentially expressed genes with a volcano plot
 
 ```{r}
 EnhancedVolcano(mda_only_condition_1v2.markers,
@@ -360,7 +361,7 @@ EnhancedVolcano(mda_only_condition_1v2.markers,
     gridlines.major = FALSE,
     gridlines.minor = FALSE,
     selectLab = c('HIST1H4C','HIST2H2AC','PCNA', 'CDKN3','HELLS','CDC45','AURKA','NEK2','HIST1H1E','CCNB1'))
-ggsave(filename = "single cell RNA SEQ May 2019/figures/DE_volcano_plot_mda_only_transfervsnotransfer_labelled_ckdesign.png", dpi = 300, type="cairo-png", units = "in")
+ggsave(filename = "figures/DE_volcano_plot_mda_only_transfervsnotransfer_labelled_ckdesign.png", dpi = 300, type="cairo-png", units = "in")
 ```
 
-I will then use this differential expression dataset and process it using the Ingenuity pathway analysis software by Qiagen.
+
