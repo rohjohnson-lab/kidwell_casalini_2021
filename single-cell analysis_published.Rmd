@@ -344,24 +344,3 @@ fwrite(x = mda_only_condition_1v2.markers, row.names = TRUE, file = "data/R_anal
 
 I will then use this differential expression dataset saved above and process it using the Ingenuity pathway analysis software by Qiagen.
 
-#To bisualize the differentially expressed genes with a volcano plot
-
-```{r}
-EnhancedVolcano(mda_only_condition_1v2.markers,
-    lab = rownames(mda_only_condition_1v2.markers),
-    x = 'avg_log2FC',
-    y = 'p_val_adj',
-    title = 'Differentially Expressed Genes',
-    xlim = c(-1.9, 2.4),
-    FCcutoff = 0.2,
-    pCutoff = 10e-30,
-    pointSize = 1.0,
-    col = c("#D6D6D6", "#787878", "#000000", "#000000"),
-    labSize = 3.0,
-    gridlines.major = FALSE,
-    gridlines.minor = FALSE,
-    selectLab = c('HIST1H4C','HIST2H2AC','PCNA', 'CDKN3','HELLS','CDC45','AURKA','NEK2','HIST1H1E','CCNB1'))
-ggsave(filename = "figures/DE_volcano_plot_mda_only_transfervsnotransfer_labelled_ckdesign.png", dpi = 300, type="cairo-png", units = "in")
-```
-
-
