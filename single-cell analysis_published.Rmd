@@ -15,11 +15,15 @@ The following are the packages used in this analysis:
 
 ```{r message=FALSE, warning=FALSE}
 library(Seurat)
+library(SeuratDisk)
+library(SeuratData)
+library(patchwork)
 library(reticulate)
 library(dplyr)
 library(ggplot2)
 library(sctransform)
 library(gplots)
+library(cowplot)
 getwd()
 ```
 
@@ -189,7 +193,7 @@ Using https://doi.org/10.1016/j.ccell.2019.02.009 as a source, Table S3 - we can
 
 ```{r}
 #Idents(mitotransfer.combined) <- "condition"
-TAM_GENE_MARKERS <- c("APOE","ATG7","BCAT1","CCL7","CD163","CD68","CD84","CHI3L1","CHIT1","CLEC5A","COL8A2","COLEC12","CTSK","CXCL5","CYBB","DNASE2B","EMP1","FDX1","FN1","GM2A","GPC4","ANOS1","MARCO","ME1","MS4A4A","MSR1","PCOLCE2","PTGDS","RAI14","SCARB2","SCG5","SGMS1","SULT1C2","ITGAM")
+TAM_GENE_MARKERS <- c("APOE","BCAT1","CCL7","CD163","CD68","CD84","CHI3L1","CHIT1","CLEC5A","COL8A2","COLEC12","CTSK","CXCL5","CYBB","DNASE2B","EMP1","FDX1","FN1","GM2A","GPC4","MARCO","MS4A4A","MSR1","PCOLCE2","PTGDS","RAI14","SCARB2","SCG5","SULT1C2","ITGAM")
 DoHeatmap(mitotransfer.combined, features = TAM_GENE_MARKERS, size = 2)
 ggsave("figures/heatmap_TAM_only_gene_signature.png")
 
@@ -215,7 +219,7 @@ DoHeatmap(mitotransfer.combined, features = MDA_GENE_MARKERS, size = 2,)
 ```
 
 
-Given the results, it looks fairly clear that cluster 2-7 are MDA-MB-231 cells. Next step, we should label these clusters and revisualize the clusters with the names.
+Given the results, it looks fairly clear that cluster 2-8 are MDA-MB-231 cells. Next step, we should label these clusters and revisualize the clusters with the names. Macrophages are Cluster 0, 1, and 9.
 
 ```{r}
 #First, backup the existing numeric cluster ID's in the metadata
@@ -242,6 +246,12 @@ Y <- table(Idents(mitotransfer.combined), mitotransfer.combined$condition)
 X
 Y
 ```
+
+```{r}
+SaveH5Seurat(mitotransfer.combined, overwrite = TRUE)
+```
+
+
 
 To start, I'll look at all markers that differentiate the clusters.  I'll calculate markers that have a minimum pct of .25 and a logfc threshold of .25 and print off the top 10 of each cluster for viewing.
 
