@@ -301,6 +301,14 @@ mac_cells <- FindNeighbors(object = mac_cells)
 mac_cells <- FindClusters(mac_cells, resolution = 0.5, dims.use = 1:15)
 ```
 
+```{r}
+
+SaveH5Seurat(mac_cells, overwrite = TRUE, filename = "macrophage.h5seurat")
+SaveH5Seurat(mda_cells, overwrite = TRUE, filename = "mda-mb-231.h5seurat")
+
+```
+
+
 Let's visualize the MDA specific and MAC specific cell subsets by umap and tSNE
 
 ```{r}
