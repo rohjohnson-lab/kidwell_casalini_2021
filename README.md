@@ -13,4 +13,4 @@ The matrix and barcode files were then used for the Rstudio notebook (single-cel
 
 Associated Citation:
 
-https://www.biorxiv.org/content/10.1101/2021.08.10.455713v1
+https://elifesciences.org/articles/85494
